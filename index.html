@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSON API Tester</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+        #dropdown {
+            display: none;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h2>REST API JSON Tester</h2>
+
+    <label for="jsonInput">Enter JSON:</label><br>
+    <textarea id="jsonInput" rows="5" cols="40"></textarea><br>
+    <button onclick="submitJSON()">Submit</button>
+    <p id="error" style="color: red;"></p>
+
+    <select id="dropdown">
+        <option value="alphabet">Alphabets</option>
+        <option value="numbers">Numbers</option>
+        <option value="highest_alphabet">Highest Alphabet</option>
+    </select>
+
+    <h3>Response:</h3>
+    <pre id="response"></pre>
+
+    <script>
+        function submitJSON() {
+            const jsonInput = document.getElementById("jsonInput").value;
+            const errorMsg = document.getElementById("error");
+            const dropdown = document.getElementById("dropdown");
+            const responseDiv = document.getElementById("response");
+
+            try {
+                const jsonData = JSON.parse(jsonInput); // Validate JSON
+                errorMsg.innerText = "";
+
+                fetch("http://localhost:5000/api/data", { 
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(jsonData)
+                })
+                .then(res => res.json())
+                .then(data => {
+                    responseDiv.innerText = JSON.stringify(data, null, 2);
+                    dropdown.style.display = "block"; // Show dropdown
+                })
+                .catch(error => {
+                    errorMsg.innerText = "Error fetching API";
+                    console.error("Fetch error:", error);
+                });
+
+            } catch (error) {
+                errorMsg.innerText = "Invalid JSON!";
+                dropdown.style.display = "none";
+            }
+        }
+    </script>
+</body>
+</html>
